@@ -1,0 +1,4 @@
+[
+  {"start":0.2,"end":1.5,"bigTop":true,"rows":[[{"text":"MAKE","start":0.2},{"text":"IT","start":0.45}],[{"text":"MOVE","start":0.8}]]},
+  {"start":1.5,"end":3.0,"bigTop":false,"rows":[[{"text":"FEEL","start":1.5},{"text":"THE","start":1.8}],[{"text":"RHYTHM","start":2.1}]]}
+]

@@ -1,0 +1,1 @@
+Keep the inversion-mask treatment, word-by-word timing, fixed word placement, and variable line hierarchy consistent with SKILL.md. Preserve source media. Do not add private footage, lyrics, fonts, credentials, generated masks, or render outputs to this repository. Use the synthetic example for verification. Document platform and export limitations honestly.
