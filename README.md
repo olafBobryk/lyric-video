@@ -26,7 +26,7 @@ Prepare timed phrase cards following the schema in [the inverted style reference
 python3 scripts/render-video.py source.mov cards.json output
 ```
 
-Use `--duration 15` for a draft. The output includes a lossless RGB FFV1 master (`lyrics-master.mkv`) and high-quality H.264 MP4 (`lyrics-full.mp4`). Original audio is copied. The master preserves the RGB composite losslessly; it cannot recover detail missing from the input.
+Use `--duration 15` for a draft. If the footage sits inside black bars or another inner frame, pass that area as `--frame x:y:w:h` in source pixels so the cards fit the picture instead of the whole canvas. The output includes a lossless RGB FFV1 master (`lyrics-master.mkv`) and high-quality H.264 MP4 (`lyrics-full.mp4`). Original audio is copied. The master preserves the RGB composite losslessly; it cannot recover detail missing from the input.
 
 The renderer writes masks and exports into the selected output folder and replaces files with those names. Use a fresh output folder for each revision.
 
