@@ -1,4 +1,4 @@
 interface:
-  display_name: "Inverted Lyrics"
-  short_description: "Bold word-timed lyrics cut from inverted footage"
-  default_prompt: "Use $inverted-lyrics to add oversized, word-timed inverted lyric masks to my video with alternating dominant lines."
+  display_name: "Lyric Video"
+  short_description: "Style lyric videos and review unclear transcriptions"
+  default_prompt: "Use $lyric-video to transcribe my video, review unclear lyrics with me, and create a word-timed edit in my chosen style."

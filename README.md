@@ -1,16 +1,16 @@
-# Inverted Lyrics
+# Lyric Video
 
-Oversized kinetic typography that inverts the footage inside each letter. Words appear in time with the vocals, with alternating dominant top and bottom lines and approximately 10% safe padding.
+Create lyric videos with a chosen visual style, word-level timing, and a transcript review loop for unclear vocals. The bundled renderer implements the optional inverted typography preset: oversized letters, alternating dominant rows, and approximately 10% safe padding.
 
 ## Install
 
 ```sh
-npx skills add olafBobryk/inverted-lyrics --skill inverted-lyrics
+npx skills add olafBobryk/lyric-video --skill lyric-video
 ```
 
 Ask your agent:
 
-> Use inverted-lyrics on my video. Start with a test frame and a 15-second draft, reveal words progressively, and alternate oversized top and bottom lines.
+> Use lyric-video on my video with the inverted typography style. Start with a test frame and a 15-second draft, reveal words progressively, and alternate oversized top and bottom lines.
 
 ## Requirements
 
@@ -20,7 +20,7 @@ The provided exporter targets unrotated, constant-frame-rate SDR BT.709 footage 
 
 ## Render
 
-Prepare timed phrase cards following the schema in [SKILL.md](SKILL.md), then run:
+Prepare timed phrase cards following the schema in [the inverted style reference](references/inverted-style.md), then run:
 
 ```sh
 python3 scripts/render-video.py source.mov cards.json output
@@ -44,3 +44,7 @@ Tested with Python 3.14, Swift 6.3.3, and FFmpeg 9.0.1. No font binaries are dis
 ## Terms
 
 Use and customization for personal or commercial work are allowed; redistribution or resale of the tool is not. See [LICENSE](LICENSE). This is source-available, not an open-source license.
+
+## Transcript review
+
+Uncertain spans are numbered chronologically with timestamps and context. Reply with corrections by number or in order. The agent checks the mapping, updates word timing and the transcript, re-renders, and verifies no unresolved placeholders remain. Any other suspected wording or timing issues are reported before calling an export ready to send.

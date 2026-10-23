@@ -1,52 +1,36 @@
 ---
-name: inverted-lyrics
-description: Create kinetic lyric videos with oversized condensed typography that masks inverted footage, progressive word reveals, and alternating dominant top and bottom lines. Use for this specific lyric treatment, its test frames, drafts, and full exports.
+name: lyric-video
+description: Create lyric videos with user-selected typography and reveal styles, word-level timing, an unclear-transcript review and correction loop, and verified exports. Includes an optional inverted-footage typography preset.
 ---
 
-# Inverted lyrics
+# Lyric video
 
-Use the user's footage as the visual and audio source. Render text as a mask selecting an RGB-inverted copy of the same frame: `output = original * (1-mask) + (255-original) * mask`. Do not substitute opaque white lettering. Outside the mask, preserve the footage.
+Turn the user's recording into a lyric video. Treat transcript accuracy, timing, and visual style as separate decisions. Preserve the original source; render revisions into separate output folders.
 
-## Approved visual language
+## Choose the style
 
-- Heavy, aggressive, non-serif condensed capitals. Impact is the default when available; keep the font configurable. Do not redistribute installed font files.
-- Approximately 10% internal safe padding on all edges, not an added outer border. Preserve source framing and aspect ratio.
-- Short phrase cards, usually two rows. Alternate a tall top row with a tall bottom row; the dominant row occupies roughly twice the height of the other. Occasional balanced arrangements are appropriate when phrase length needs them.
-- Fit complete phrases before revealing them. Keep word positions fixed as new words appear. Reveal whole words at their sung onset, accumulate within the phrase, then replace the card at the next phrase. Never reveal an entire verse at once or re-center on every new word.
-- Scale typography to fill the safe area, allowing deliberate condensed/stretched letterforms consistent with the approved treatment. Avoid decorative outlines, panels, shadows, or transitions unless requested.
+Honor the user's selected or previously approved style. If no style is established, ask one concise question about typography, placement, and reveal behavior before committing to a look. Offer a few relevant choices, such as plain subtitles, a karaoke highlight, or oversized kinetic lettering. Do not automatically apply inversion, Impact, capitals, stretched lettering, or a 10% margin to every video.
 
-## Work sequence
+For inverted footage inside oversized letters with progressive word reveals and alternating dominant rows, read [references/inverted-style.md](references/inverted-style.md). The included scripts implement that preset; adapt or use another rendering method for other styles rather than claiming they support every treatment.
 
-1. Inspect video dimensions, duration, frame rate, rotation, color range/space, and audio. Keep the original untouched; work in a separate output folder.
-2. Transcribe and obtain acoustic word timestamps. Plain segment timestamps or evenly spaced words are not sufficient. Local MLX Whisper with word timestamps is an available route on Apple silicon. Whisper.cpp DTW requires disabling flash attention on configurations that otherwise produce `t_dtw = -1`; reject missing timestamps.
-3. Check ambiguous vocals. Ask for a title/lyric reference when material words remain uncertain, while continuing independent rendering preparation. Do not present uncertain recognition as verified lyrics. Supplied lyrics still need alignment to this recording, including pauses, ad-libs and cut-off endings.
-4. Group timed words into readable short cards at musical/semantic boundaries. Alternate dominant rows intentionally. Preserve approved draft choices unless correcting transcription or timing errors.
-5. For a new treatment, create a representative still and short motion draft when requested. A request for the full edit after approval authorizes continuing; do not introduce another approval gate.
-6. Render from the source, never from the compressed draft. Native dimensions/frame rate preserve real detail; upscaling alone adds none. Preserve color interpretation and original audio. For maximum-quality requests provide a lossless RGB FFV1 master with copied audio and a compatible high-quality H.264 MP4 with copied audio when supported. Explain codec/container tradeoffs only as needed.
-7. Verify duration/frame count, audio presence, dimensions, beginning/end coverage, safe padding, fully shown and partially shown cards, top/bottom variation, and actual inversion. Return direct artifact links and an inline video preview where supported. Disclose material transcription/timing uncertainty.
+Use a representative still and a short motion draft when requested. Carry the approved style into the full video; do not introduce repeat approval gates.
 
-## Reusable export script
+## Transcribe and review unclear lyrics
 
-[scripts/render-video.py](scripts/render-video.py) orchestrates probing, card validation, compiling the mask renderer, 2× mask supersampling, and both exports:
+1. Inspect the source duration, frame rate, dimensions, rotation, color space/range, and audio. Transcribe the recording and obtain acoustic word timestamps. Do not use uniformly spaced words as final alignment.
+2. Check uncertain recognition, conflicting transcription passes, suspicious phrases, ad-libs, and clipped endings. A second model can help, but agreement does not prove correctness. Distinguish an uncertain lyric from an uncertain timestamp.
+3. If useful, ask for a song/artist or supplied lyric reference. If the recording is personal, unreleased, or has no available reference, stop searching for one and use the user's review. Never publish their media or lyrics with the skill.
+4. Produce an editable timestamped transcript and a compact numbered list of unclear spans in playback order. Each item includes a stable ID, start/end, and enough surrounding words to locate it. Mark unresolved wording as `[UNCLEAR]` instead of silently choosing a guess. Include other suspected errors even if they were not originally marked. Keep this list unchanged while awaiting corrections.
+5. Ask the user to supply the missing words by ID or in that order. Continue independent styling/export preparation. If authorized, provide a review cut with the placeholders and label it clearly; do not call it lyric-final.
+6. Apply an ordered reply one-to-one to the numbered spans. Verify the number of corrections matches. If the count or intended span is ambiguous, ask only about that mapping before changing those words. Preserve user-supplied wording, slang, and explicit lyrics. Mention minor spelling normalization; never silently rewrite lyrics for grammar.
+7. Expand multiword corrections into individually timed words and realign against the recording. Retain approved layout choices unless the phrase needs reflow. If timing can only be estimated, disclose that and keep timing review separate from wording approval. Do not squeeze a longer phrase into a tiny remaining interval and claim accurate synchronization. For a cut-off ending, explain what the recording supports; ask for the continuation or a choice before extending, freezing, or changing the edit.
+8. Update both the transcript and timed render data, then render from the original source. Check all corrected spans and transitions. Search the actual final card/subtitle data for `[UNCLEAR]`, question-mark placeholders, TODOs, and unresolved IDs; verify every user correction is present exactly once in its intended location. Do not mistake uncertainty notes in a review document for on-screen leftovers.
+9. When asked whether the video is ready to send, report separately: placeholder count, remaining suspected wording, timing caveats, and export verification. Zero placeholders is not proof of a fully verified transcript. Give a brief conclusion without exposing private reasoning; call it ready as a review cut when unresolved issues remain.
 
-```sh
-python3 scripts/render-video.py source.mov cards.json output-directory
-```
+## Timing and exports
 
-Use `--duration 15` for a short draft. It needs macOS Swift and FFmpeg on PATH and preserves the source audio stream. It rejects rotation metadata that needs normalization. For HDR, non-BT.709 color, unusual frame rates, or incompatible copied audio, inspect and adapt the conversion explicitly rather than blindly using the SDR defaults. The master is lossless relative to the RGB composite, not the original encoded YUV representation.
+Local MLX Whisper with word timestamps is one transcription route on Apple silicon. Whisper.cpp DTW may require disabling flash attention if it returns `t_dtw = -1`; reject missing timestamps. Reference lyrics must be aligned to this particular performance, including pauses and ad-libs.
 
-When the user must review lyrics, create a full review cut if authorized, use `[UNCLEAR]` for unresolved words, and provide a timestamped editable transcript. Clearly label it a review cut; highest-quality encoding does not imply artist-verified lyrics. Once corrections arrive, update the timed cards and re-render directly from the source.
+Render from the source rather than a compressed draft. Preserve source framing, real resolution, frame rate, color interpretation, and audio unless the user requests changes. For maximum quality, provide a lossless RGB composite master and a compatible high-quality MP4. Upscaling alone does not recover detail. Check platform/codec constraints before choosing export settings.
 
-## Reusable mask renderer
-
-On macOS, compile [scripts/render-masks.swift](scripts/render-masks.swift) using `swiftc`. It uses CoreText/CoreGraphics directly, avoiding AppKit application initialization and Swift interpreter failures. Run:
-
-```sh
-render-masks cards.json output-directory width height fps duration
-```
-
-Produces `output-directory/masks/0000.png`, etc. Coordinates scale to the requested dimensions. Use the source dimensions or supersample the mask and downsample with a high-quality filter. No font file is bundled.
-
-The JSON is an array of cards with `start`, `end` (seconds, half-open interval), `bigTop` (boolean), and `rows` (two arrays of `{ "text": "WORD", "start": 1.3 }`). Words are uppercase and punctuation is attached to its word. Cards must not overlap; words must be chronological and lie within their card. Silence can have no card. The renderer clips the pre-laid-out full line at word boundaries, without moving earlier words.
-
-Composite with FFmpeg `split`, `negate`, and `maskedmerge` in RGB (`gbrp`), mapping the original audio. Keep source range conversion explicit when it differs from the export. For RGB lossless output, use `ffv1 -level 3 -pix_fmt bgr0` in MKV. For broad MP4 compatibility, convert to `yuv420p`, use `libx264 -crf 12 -preset slow`, and enable `+faststart`. Preserve the full source duration; inspect whether an explicit frame-derived `-t` would truncate audio.
+Verify duration/frame count, audio presence and preservation, beginning/end coverage, text fit, partially and fully revealed phrases, correction coverage, and the chosen visual effect. Provide direct artifact links and an inline preview where supported. Keep review status and encoding quality distinct.
